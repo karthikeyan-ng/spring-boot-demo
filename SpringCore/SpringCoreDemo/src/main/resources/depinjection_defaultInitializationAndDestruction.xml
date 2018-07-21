@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd"
+	default-init-method="init"
+	default-destroy-method="cleanup">
+
+	<!--
+	The destroy-method attribute of a <bean> element can be assigned a special (inferred) value which instructs Spring to automatically 
+	detect a public close or shutdown method on the specific bean class (any class that implements java.lang.AutoCloseable or 
+	java.io.Closeable would therefore match). This special (inferred) value can also be set on the default-destroy-method 
+	attribute of a <beans> element to apply this behavior to an entire set of beans (see Default initialization and destroy methods). 
+	Note that this is the default behavior with Java config. 
+	 -->
+
+	<bean id="account" class="com.techstack.spring.lifecycle.defaultinitializationanddestroy.Account" />
+	
+	<bean id="customer" class="com.techstack.spring.lifecycle.defaultinitializationanddestroy.Customer"/>
+</beans>

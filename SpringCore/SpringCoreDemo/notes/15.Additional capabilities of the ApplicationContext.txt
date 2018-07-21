@@ -1,0 +1,111 @@
+Additional capabilities of the ApplicationContext
+-------------------------------------------------
+As was discussed in the chapter introduction, the org.springframework.beans.factory package provides basic functionality for managing and manipulating beans, 
+including in a programmatic way.
+
+The org.springframework.context package adds the ApplicationContext interface, which extends the BeanFactory interface, in addition to extending other 
+interfaces to provide additional functionality in a more application framework-oriented style.
+
+Many people use the ApplicationContext in a completely declarative fashion, not even creating it programmatically, but instead relying on support classes 
+such as ContextLoader to automatically instantiate an ApplicationContext as part of the normal startup process of a Java EE web application.
+
+	To enhance BeanFactory functionality in a more framework-oriented style the context package also provides the following functionality:
+		
+		- Access to messages in i18n-style, through the MessageSource interface.
+		
+		- Access to resources, such as URLs and files, through the ResourceLoader interface.
+		
+		- Event publication to namely beans implementing the ApplicationListener interface, through the use of the ApplicationEventPublisher interface.
+		
+		- Loading of multiple (hierarchical) contexts, allowing each to be focused on one particular layer, such as the web layer of an application, 
+		through the HierarchicalBeanFactory interface.
+		
+Internationalization using MessageSource
+----------------------------------------
+The ApplicationContext interface extends an interface called MessageSource, and therefore provides internationalization (i18n) functionality. 
+Spring also provides the interface HierarchicalMessageSource, which can resolve messages hierarchically. 
+Together these interfaces provide the foundation upon which Spring effects message resolution. 
+The methods defined on these interfaces include:
+
+	- String getMessage(String code, Object[] args, String default, Locale loc):
+			The basic method used to retrieve a message from the MessageSource. When no message is found for the specified locale, 
+			the default message is used. Any arguments passed in become replacement values, using the MessageFormat functionality provided by 
+			the standard library.
+			
+	- String getMessage(String code, Object[] args, Locale loc):
+			Essentially the same as the previous method, but with one difference: no default message can be specified; 
+			if the message cannot be found, a NoSuchMessageException is thrown.
+			
+	- String getMessage(MessageSourceResolvable resolvable, Locale locale):
+			All properties used in the preceding methods are also wrapped in a class named MessageSourceResolvable, which you can use with this method.
+			
+When an ApplicationContext is loaded, it automatically searches for a MessageSource bean defined in the context. 
+The bean must have the name messageSource. If such a bean is found, all calls to the preceding methods are delegated to the message source. 
+If no message source is found, the ApplicationContext attempts to find a parent containing a bean with the same name. 
+If it does, it uses that bean as the MessageSource. If the ApplicationContext cannot find any source for messages, an empty 
+DelegatingMessageSource is instantiated in order to be able to accept calls to the methods defined above.
+
+Spring provides two MessageSource implementations, 
+	ResourceBundleMessageSource and 
+	StaticMessageSource. 
+Both implement HierarchicalMessageSource in order to do nested messaging. 
+The StaticMessageSource is rarely used but provides programmatic ways to add messages to the source. 
+The ResourceBundleMessageSource is shown in the following example:
+
+- With regard to internationalization (i18n), Spring’s various MessageSource implementations follow the same locale resolution and fallback rules as the standard JDK ResourceBundle.
+- In short, and continuing with the example messageSource defined previously, if you want to resolve messages against the British (en-GB) locale, 
+		you would create files called as given below. 
+			format_en_GB.properties, 
+			exceptions_en_GB.properties, and 
+			windows_en_GB.properties.
+			
+============================================================================
+Standard and custom events
+--------------------------
+Event handling in the ApplicationContext is provided through the ApplicationEvent class and ApplicationListener interface. 
+If a bean that implements the ApplicationListener interface is deployed into the context, every time an 
+ApplicationEvent gets published to the ApplicationContext, that bean is notified. Essentially, this is the standard Observer design pattern.
+
+Spring provides the following standard events: (Built-in events)
+	- ContextRefreshedEvent 
+	- ContextStartedEvent
+	- ContextStoppedEvent
+	- ContextClosedEvent
+	- RequestHandledEvent (MVC)
+	
+============================================================================
+Convenient access to low-level resources
+----------------------------------------
+For optimal usage and understanding of application contexts, users should generally familiarize themselves with 
+Spring’s Resource abstraction, as described in the chapter Resources (2nd chapter).
+
+============================================================================
+Convenient ApplicationContext instantiation for web applications
+----------------------------------------------------------------
+You can create ApplicationContext instances declaratively by using, for example, a ContextLoader. Of course you can also 
+create ApplicationContext instances programmatically by using one of the ApplicationContext implementations.
+
+You can register an ApplicationContext using the ContextLoaderListener as follows:
+
+	<context-param>
+	    <param-name>contextConfigLocation</param-name>
+	    <param-value>/WEB-INF/daoContext.xml /WEB-INF/applicationContext.xml</param-value>
+	</context-param>
+	
+	<listener>
+	    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+The listener inspects the contextConfigLocation parameter. 
+ - If the parameter does not exist, the listener uses /WEB-INF/applicationContext.xml as a default. 
+ - When the parameter does exist, the listener separates the String by using predefined delimiters (comma, semicolon and whitespace) 
+and uses the values as locations where application contexts will be searched.
+ - Ant-style path patterns are supported as well. 
+ 	- Examples are /WEB-INF/*Context.xml for all files with names ending with "Context.xml", residing in the "WEB-INF" directory
+ 	- and /WEB-INF/**/*Context.xml, for all such files in any subdirectory of "WEB-INF".
+
+============================================================================ 
+Deploying a Spring ApplicationContext as a Java EE RAR file
+-----------------------------------------------------------
+	NOT MUCH IMPORTANT AS OF NOW
+	

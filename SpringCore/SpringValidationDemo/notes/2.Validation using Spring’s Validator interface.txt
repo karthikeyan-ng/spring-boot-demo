@@ -1,0 +1,29 @@
+							Validation, Data Binding, and Type Conversion
+							---------------------------------------------
+
+		Validation using Spring’s Validator interface
+		---------------------------------------------
+		
+- Spring features a Validator interface that you can use to validate objects. 
+
+- The Validator interface works using an Errors object so that while validating, validators can report validation failures to the Errors object.
+
+Let’s consider a small data object:
+
+	Person.java - from com.techstack.spring.validator package
+	
+We’re going to provide validation behavior for the Person class by implementing the following two methods of the 
+org.springframework.validation.Validator interface:
+
+	- supports(Class) - Can this Validator validate instances of the supplied Class?
+	
+	- validate(Object, org.springframework.validation.Errors) - validates the given object and in case of validation errors, 
+	registers those with the given Errors object
+	
+Implementing a Validator is fairly straightforward, especially when you know of the ValidationUtils helper class that the 
+Spring Framework also provides.
+
+	PersonValidator.java - from com.techstack.spring.validator package
+	
+
+	

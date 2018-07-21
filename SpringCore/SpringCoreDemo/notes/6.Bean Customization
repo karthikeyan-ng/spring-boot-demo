@@ -1,0 +1,153 @@
+Customizing the nature of a bean
+--------------------------------
+
+	Initialization callbacks
+	------------------------
+	- To interact with the container’s management of the bean lifecycle, you can implement the Spring InitializingBean and DisposableBean interfaces.
+	
+	- The container calls afterPropertiesSet() for the former and destroy() for the latter to allow the bean to perform certain actions upon initialization and destruction of your beans.
+	
+	- The JSR-250 @PostConstruct and @PreDestroy annotations are generally considered best practice for receiving lifecycle callbacks in a modern 
+	Spring application. Using these annotations means that your beans are not coupled to Spring specific interfaces. 
+	
+	- The Spring Framework uses BeanPostProcessor implementations to process any callback interfaces it can find and call the appropriate methods.
+	
+	- If you need custom features or other lifecycle behavior Spring does not offer out-of-the-box, you can implement a BeanPostProcessor yourself.
+	
+	- In addition to the initialization and destruction callbacks, Spring-managed objects may also implement the Lifecycle interface so that those 
+	objects can participate in the startup and shutdown process as driven by the container’s own lifecycle.
+	
+	How to use 
+		- org.springframework.beans.factory.InitializingBean Interface
+			void afterPropertiesSet() throws Exception;
+		
+		- annotation: @PostConstruct
+		
+		- xml: <bean init-method="init" />
+		
+		- BeanPostProcessor - for custom features implementation
+		
+	Destruction callbacks
+	---------------------
+	- Implementing the org.springframework.beans.factory.DisposableBean interface allows a bean to get a callback when the container containing it is destroyed.
+	
+	- It is recommended that you do not use the DisposableBean callback interface because it unnecessarily couples the code to Spring.
+	
+	- Alternatively, use the @PreDestroy annotation or specify a generic method that is supported by bean definitions.
+	
+	How to use:
+		- org.springframework.beans.factory.DisposableBean Interface
+			void destroy() throws Exception;
+			
+		- annotation: @PreDestroy
+		
+		- xml: <bean destroy-method="cleanup" />
+		
+	Default initialization and destroy methods
+	------------------------------------------
+	- When you write initialization and destroy method callbacks that do not use the Spring-specific InitializingBean and DisposableBean callback 
+	interfaces, you typically write methods with names such as init(), initialize(), dispose(), and so on.
+	
+	- You can configure the Spring container to look for named initialization and destroy callback method names on every bean.
+	
+	- This means that you, as an application developer, can write your application classes and use an initialization callback called init(), 
+	without having to configure an init-method="init" attribute with each bean definition.
+	
+	How to use:
+		- xml: <beans default-init-method="init" default-destroy-method="cleanup"></beans>
+	
+	Combining lifecycle mechanisms
+	------------------------------
+	- As of Spring 2.5, you have three options for controlling bean lifecycle behavior:
+		- the InitializingBean and DisposableBean callback interfaces
+		- custom init() and destroy() methods
+		- the @PostConstruct and @PreDestroy annotations
+		
+	- You can combine these mechanisms to control a given bean.
+	
+	- Multiple lifecycle mechanisms configured for the same bean, with different initialization methods, are called as follows:
+	
+		- Methods annotated with @PostConstruct
+		
+		- afterPropertiesSet() as defined by the InitializingBean callback interface
+		
+		- A custom configured init() method
+		
+		Destroy methods are called in the same order:
+			
+			- Methods annotated with @PreDestroy
+			
+			- destroy() as defined by the DisposableBean callback interface
+			
+			- A custom configured destroy() method
+			
+	Startup and shutdown callbacks
+	------------------------------
+	- The Lifecycle interface defines the essential methods for any object that has its own lifecycle requirements 
+	(e.g. starts and stops some background process)
+	
+	How to use:
+	
+		Lifecycle Interface
+			- start()
+			- stop()
+			- isRunning()
+			
+		LifecycleProcessor Interface extends Lifecycle
+			- onRefresh
+			- onClose
+			
+		SmartLifecycle Interface extends Lifecycle, Phased
+			- isAutoStartup()
+			- stop(Runnable callback)
+			
+		<bean id="lifecycleProcessor" class="org.springframework.context.support.DefaultLifecycleProcessor">
+    		<!-- timeout value in milliseconds -->
+    		<property name="timeoutPerShutdownPhase" value="10000"/>
+		</bean>	
+	
+	Shutting down the Spring IoC container gracefully in non-web applications
+	-------------------------------------------------------------------------
+	- This section applies only to non-web applications.
+	- If you are using Spring’s IoC container in a non-web application environment; 
+		for example, in a rich client desktop environment; you register a shutdown hook with the JVM
+	- Doing so ensures a graceful shutdown and calls the relevant destroy methods on your singleton beans so that all 
+	resources are released. Of course, you must still configure and implement these destroy callbacks correctly.
+	
+	How to use:
+		ConfigurableApplicationContext Interface and use registerShutdownHook() method
+
+================================================================================================================		
+
+ApplicationContextAware and BeanNameAware
+-----------------------------------------
+	ApplicationContextAware
+	-----------------------
+	- When an ApplicationContext creates an object instance that implements the 
+	org.springframework.context.ApplicationContextAware interface, the instance is provided with a reference to that 
+	ApplicationContext.
+	
+	- Thus beans can manipulate programmatically the ApplicationContext that created them, through the ApplicationContext interface.
+	or by casting the reference to a known subclass of this interface, such as ConfigurableApplicationContext, which exposes additional functionality.
+	
+	- One use would be the programmatic retrieval of other beans.
+	
+	- Sometimes this capability is useful;
+	
+	- in general you should avoid it, because it couples the code to Spring and does not follow the Inversion of Control 
+	style, where collaborators are provided to beans as properties.
+	
+	Other Aware Interfaces
+	----------------------
+	ApplicationContextAware - 
+	ApplicationEventPublisherAware -
+	BeanClassLoaderAware -
+	BeanFactoryAware -
+	BeanNameAware - 
+	BootstrapContextAware -
+	LoadTimeWeaverAware 
+	MessageSourceAware
+	NotificationPublisherAware
+	ResourceLoaderAware
+	ServletConfigAware
+	ServletContextAware

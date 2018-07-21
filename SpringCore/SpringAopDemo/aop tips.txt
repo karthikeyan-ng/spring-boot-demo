@@ -1,0 +1,13 @@
+Tips:
+=====
+Autodetecting aspects through component scanning
+		You may register aspect classes as regular beans in your Spring XML configuration, or 
+		autodetect them through classpath scanning - just like any other Spring-managed bean. 
+		However, note that the @Aspect annotation is not sufficient for autodetection in the classpath: 
+		For that purpose, you need to add a separate @Component annotation 
+		(or alternatively a custom stereotype annotation that qualifies, as per the rules of Spring’s component scanner).
+		
+Advising aspects with other aspects?
+		In Spring AOP, it is not possible to have aspects themselves be the target of advice from other aspects. 
+		The @Aspect annotation on a class marks it as an aspect, and hence excludes it from auto-proxying.
+		

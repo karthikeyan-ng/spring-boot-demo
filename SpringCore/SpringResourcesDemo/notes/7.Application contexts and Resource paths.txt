@@ -1,0 +1,158 @@
+						Resources
+						---------
+Application contexts and Resource paths
+---------------------------------------
+
+	Constructing application contexts
+	---------------------------------
+An application context constructor (for a specific application context type) generally takes a string or array of strings as the 
+location path(s) of the resource(s) such as XML files that make up the definition of the context.
+
+When such a location path doesn’t have a prefix, the specific Resource type built from that path and used to load the bean definitions, 
+depends on and is appropriate to the specific application context. For example, if you create a ClassPathXmlApplicationContext as follows:
+
+	ApplicationContext ctx = new ClassPathXmlApplicationContext("conf/appContext.xml");
+
+The bean definitions will be loaded from the classpath, as a ClassPathResource will be used. But if you create a FileSystemXmlApplicationContext 
+as follows:
+
+	ApplicationContext ctx = new FileSystemXmlApplicationContext("conf/appContext.xml");
+	
+The bean definition will be loaded from a filesystem location, in this case relative to the current working directory.
+
+Note that the use of the special classpath prefix or a standard URL prefix on the location path will override the default type of 
+Resource created to load the definition. So this FileSystemXmlApplicationContext…​
+
+	ApplicationContext ctx = new FileSystemXmlApplicationContext("classpath:conf/appContext.xml");
+
+will actually load its bean definitions from the classpath. However, it is still a FileSystemXmlApplicationContext. If it is subsequently 
+used as a ResourceLoader, any unprefixed paths will still be treated as filesystem paths.
+
+			Constructing ClassPathXmlApplicationContext instances - shortcuts
+			-----------------------------------------------------------------
+			
+The ClassPathXmlApplicationContext exposes a number of constructors to enable convenient instantiation. The basic idea is that 
+one supplies merely a string array containing just the filenames of the XML files themselves (without the leading path information), and 
+one also supplies a Class; the ClassPathXmlApplicationContext will derive the path information from the supplied class.
+
+An example will hopefully make this clear. Consider a directory layout that looks like this:
+
+	com/
+  		foo/
+		    services.xml
+		    daos.xml
+		    MessengerService.class
+		    
+A ClassPathXmlApplicationContext instance composed of the beans defined in the 'services.xml' and 'daos.xml' could be instantiated like so…​
+
+	ApplicationContext ctx = new ClassPathXmlApplicationContext(
+    								new String[] {"services.xml", "daos.xml"}, MessengerService.class);
+    								
+Please do consult the ClassPathXmlApplicationContext javadocs for details on the various constructors.
+
+======================================================================================================================
+
+	Wildcards in application context constructor resource paths
+	-----------------------------------------------------------
+	
+The resource paths in application context constructor values may be a simple path (as shown above) which has a one-to-one mapping 
+to a target Resource, or alternately may contain the special "classpath*:" prefix and/or internal Ant-style regular 
+expressions (matched using Spring’s PathMatcher utility). Both of the latter are effectively wildcards
+
+One use for this mechanism is when doing component-style application assembly. All components can 'publish' context definition 
+fragments to a well-known location path, and when the final application context is created using the same path prefixed via classpath*:, 
+all component fragments will be picked up automatically.
+
+Note that this wildcarding is specific to use of resource paths in application context constructors (or when using the PathMatcher utility 
+class hierarchy directly), and is resolved at construction time. It has nothing to do with the Resource type itself. It’s not possible to 
+use the classpath*: prefix to construct an actual Resource, as a resource points to just one resource at a time.
+
+		Ant-style Patterns
+		------------------
+When the path location contains an Ant-style pattern, for example:
+
+	/WEB-INF/*-context.xml
+	com/mycompany/**/applicationContext.xml
+	file:C:/some/path/*-context.xml
+	classpath:com/mycompany/**/applicationContext.xml
+	
+	- The resolver follows a more complex but defined procedure to try to resolve the wildcard.
+	- It produces a Resource for the path up to the last non-wildcard segment and obtains a URL from it.
+	- If this URL is not a jar: URL or container-specific variant (e.g. zip: in WebLogic, wsjar in WebSphere, etc.), then a java.io.File 
+	is obtained from it and used to resolve the wildcard by traversing the filesystem.
+	- In the case of a jar URL, the resolver either gets a java.net.JarURLConnection from it or manually parses the jar URL and then 
+	traverses the contents of the jar file to resolve the wildcards.
+	
+			Implications on portability
+			---------------------------
+If the specified path is already a file URL (either explicitly, or implicitly because the base ResourceLoader is a filesystem one), 
+then wildcarding is guaranteed to work in a completely portable fashion.
+
+		The classpath*: prefix
+		----------------------
+When constructing an XML-based application context, a location string may use the special classpath*: prefix:
+
+	ApplicationContext ctx = new ClassPathXmlApplicationContext("classpath*:conf/appContext.xml");
+	
+This special prefix specifies that all classpath resources that match the given name must be obtained (internally, this essentially 
+happens via a ClassLoader.getResources(…​) call), and then merged to form the final application context definition.
+
+The classpath*: prefix can also be combined with a PathMatcher pattern in the rest of the location path, for example classpath*:META-INF/*-beans.xml.
+
+In this case, the resolution strategy is fairly simple: a ClassLoader.getResources() call is used on the last non-wildcard path segment 
+to get all the matching resources in the class loader hierarchy, and then off each resource the same PathMatcher resolution strategy described 
+above is used for the wildcard subpath.
+
+Ant-style patterns with classpath: resources are not guaranteed to find matching resources if the root package to search is available in 
+multiple class path locations. This is because a resource such as
+
+	com/mycompany/package1/service-context.xml
+	
+may be in only one location, but when a path such as
+
+	classpath:com/mycompany/**/service-context.xml
+	
+is used to try to resolve it, the resolver will work off the (first) URL returned by getResource("com/mycompany");. If this base package 
+node exists in multiple classloader locations, the actual end resource may not be underneath. Therefore, preferably, use " `classpath*:`" 
+with the same Ant-style pattern in such a case, which will search all class path locations that contain the root package.
+
+======================================================================================================================
+
+FileSystemResource caveats
+--------------------------
+A FileSystemResource that is not attached to a FileSystemApplicationContext (that is, a FileSystemApplicationContext is not the actual 
+ResourceLoader) will treat absolute vs. relative paths as you would expect.
+
+Relative paths are relative to the current working directory, while absolute paths are relative to the root of the filesystem.
+
+For backwards compatibility (historical) reasons however, this changes when the FileSystemApplicationContext is the ResourceLoader. 
+The FileSystemApplicationContext simply forces all attached FileSystemResource instances to treat all location paths as relative, 
+whether they start with a leading slash or not.
+
+	ApplicationContext ctx = new FileSystemXmlApplicationContext("conf/context.xml");
+	
+	ApplicationContext ctx = new FileSystemXmlApplicationContext("/conf/context.xml");
+	
+As are the following: (Even though it would make sense for them to be different, as one case is relative and the other absolute.)
+
+	FileSystemXmlApplicationContext ctx = ...;
+	ctx.getResource("some/resource/path/myTemplate.txt");
+	
+	FileSystemXmlApplicationContext ctx = ...;
+	ctx.getResource("/some/resource/path/myTemplate.txt");
+	
+In practice, if true absolute filesystem paths are needed, it is better to forgo the use of absolute paths with FileSystemResource / 
+FileSystemXmlApplicationContext, and just force the use of a UrlResource, by using the file: URL prefix.
+
+	// actual context type doesn't matter, the Resource will always be UrlResource
+	ctx.getResource("file:///some/resource/path/myTemplate.txt");
+	
+	// force this FileSystemXmlApplicationContext to load its definition via a UrlResource
+	ApplicationContext ctx =
+    	new FileSystemXmlApplicationContext("file:///conf/context.xml");
+    	
+Ref:
+----
+http://www.javarticles.com/2013/10/spring-classpath-resource.html
+
+

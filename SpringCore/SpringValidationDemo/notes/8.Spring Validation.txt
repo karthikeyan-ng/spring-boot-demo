@@ -1,0 +1,61 @@
+							Validation, Data Binding, and Type Conversion
+							---------------------------------------------
+							
+				Spring Validation
+				---------------------------------------
+Spring supports 
+	- JSR-303 Bean Validation API is now fully supported.
+	- When used programmatically, Spring’s DataBinder can now validate objects as well as bind to them
+	- Spring MVC now has support for declaratively validating @Controller inputs.
+	
+Overview of the JSR-303 Bean Validation API
+-------------------------------------------
+- JSR-303 standardizes validation constraint declaration and metadata for the Java platform.
+- Using this API, you annotate domain model properties with declarative validation constraints and the runtime enforces them.
+- There are a number of built-in constraints you can take advantage of.
+- You may also define your own custom constraints.
+
+For general information on JSR-303/JSR-349, see the Bean Validation website. For information on the specific 
+capabilities of the default reference implementation, see the Hibernate Validator documentation. To learn how to 
+setup a Bean Validation provider as a Spring bean, keep reading.
+
+Configuring a Bean Validation Provider
+--------------------------------------
+Spring provides full support for the Bean Validation API. This includes convenient support for bootstrapping a JSR-303/JSR-349 
+Bean Validation provider as a Spring bean.
+
+This allows for a javax.validation.ValidatorFactory or javax.validation.Validator to be injected wherever validation is needed 
+in your application.
+
+Use the LocalValidatorFactoryBean to configure a default Validator as a Spring bean:
+
+	<bean id="validator"
+	    class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+	    
+The basic configuration above will trigger Bean Validation to initialize using its default bootstrap mechanism.
+
+A JSR-303/JSR-349 provider, such as Hibernate Validator, is expected to be present in the classpath and will be detected 
+automatically.
+
+	Injecting a Validator
+	---------------------
+	LocalValidatorFactoryBean implements both javax.validation.ValidatorFactory and javax.validation.Validator, as well as 
+	Spring’s org.springframework.validation.Validator. You may inject a reference to either of these interfaces into 
+	beans that need to invoke validation logic.
+	
+	Injecting Validator reference from 
+		- javax.validation.Validator if you prefer to work with the Bean Validation API directly
+		- org.springframework.validation.Validator if your bean requires the Spring Validation API:
+		
+	Configuring Custom Constraints
+	------------------------------
+	Each Bean Validation constraint consists of two parts. 
+		- First, a @Constraint annotation that declares the constraint and its configurable properties.
+		- Second, an implementation of the javax.validation.ConstraintValidator interface that implements the constraint’s behavior.
+		
+		At runtime, a ConstraintValidatorFactory instantiates the referenced implementation when the constraint annotation is 
+		encountered in your domain model.
+
+		com.techstack.spring.validation.custom.*
+		
+		

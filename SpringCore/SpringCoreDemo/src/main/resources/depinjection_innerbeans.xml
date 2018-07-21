@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<!-- Often times, you may use 'ref' attribute to reference the "Person" bean into "Customer" bean, 
+	person property as following : -->
+	
+	<!-- 
+	<bean id="CustomerBean" class="com.techstack.spring.di.innerbeans.Customer">
+		<property name="person" ref="PersonBean" />
+	</bean>
+
+	<bean id="PersonBean" class="com.techstack.spring.di.innerbeans.Person">
+		<property name="name" value="Karthi" />
+		<property name="address" value="address1" />
+		<property name="age" value="28" />
+	</bean> 
+	-->
+	
+	<!-- In general, it's fine to reference like this, but since the 'Karthi' person bean is only used for 
+	Customer bean only, it's better to declare this 'Karthi' person as an inner bean as following : -->
+	
+	<bean id="CustomerBean" class="com.techstack.spring.di.innerbeans.Customer">
+		
+		<!-- Using setter property -->
+		<!-- <property name="person">
+			<bean class="com.techstack.spring.di.innerbeans.Person">
+				<property name="name" value="mkyong" />
+				<property name="address" value="address1" />
+				<property name="age" value="28" />
+			</bean>
+		</property> -->
+		
+		<!-- This inner bean also supported in constructor injection as following -->
+		<constructor-arg>
+			<bean class="com.techstack.spring.di.innerbeans.Person">
+				<property name="name" value="mkyong" />
+				<property name="address" value="address1" />
+				<property name="age" value="28" />
+			</bean>
+		</constructor-arg>
+	</bean>
+	
+
+</beans>

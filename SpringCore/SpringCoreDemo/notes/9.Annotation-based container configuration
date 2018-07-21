@@ -1,0 +1,33 @@
+Annotation-based container configuration
+----------------------------------------
+	XML vs Annotation which is better?
+		- it depends on the strategy. Each approach has its own pros and cons. 
+		- it is up to the developer to decide which strategy suits them better
+		
+	<context:annotation-config/>
+		- The implicitly registered post-processors include 
+				AutowiredAnnotationBeanPostProcessor, 
+				CommonAnnotationBeanPostProcessor, 
+				PersistenceAnnotationBeanPostProcessor, as well as the aforementioned 
+				RequiredAnnotationBeanPostProcessor.
+				
+		- INFO: <context:annotation-config/> only looks for annotations on beans in the same 
+		application context in which it is defined. This means that, if you put <context:annotation-config/> 
+		in a WebApplicationContext for a DispatcherServlet, it only checks for @Autowired beans in your 
+		controllers, and not your services. See The DispatcherServlet for more information.
+		
+		- @Required
+		
+		- @Autowired
+		
+		- @Primary
+			- Because autowiring by type may lead to multiple candidates, it is often necessary to have 
+			more control over the selection process. One way to accomplish this is with Spring’s @Primary 
+			annotation.
+			
+			XML: <bean class="example.SimpleMovieCatalog" primary="true">
+			
+		- Fine-tuning annotation-based autowiring with qualifiers
+			- @Primary is an effective way to use autowiring by type with several instances when one primary candidate can be determined. 
+			
+			- When more control over the selection process is required, Spring’s @Qualifier annotation can be used. 

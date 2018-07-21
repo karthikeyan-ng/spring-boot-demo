@@ -1,0 +1,12 @@
+<beans>
+	
+	<!-- step1: @EnableAspectJAutoProxy -->
+	<aop:aspectj-autoproxy/>
+	
+	
+	<!-- step2: @Aspect -->
+	<bean id="myAspect" class="com.techstack.spring.aop.LoggerAspect">
+    	<!-- configure properties of aspect here as normal -->
+	</bean>
+	
+</beans>

@@ -1,0 +1,35 @@
+	Aspect instantiation models (advance topic)
+	
+	By default there will be a single instance of each aspect within the application context. 
+	AspectJ calls this the singleton instantiation model. 
+	It is possible to define aspects with alternate lifecycles :- 
+	Spring supports AspectJ’s perthis and pertarget instantiation models 
+	( percflow, percflowbelow, and pertypewithin are not currently supported).
+
+	A "perthis" aspect is declared by specifying a perthis clause in the @Aspect annotation. 
+	Let’s look at an example, and then we’ll explain how it works.
+	
+	@Aspect("perthis(com.xyz.myapp.SystemArchitecture.businessService())")
+	public class MyAspect {
+
+	    private int someState;
+	
+	    @Before(com.xyz.myapp.SystemArchitecture.businessService())
+	    public void recordServiceUsage() {
+	        // ...
+	    }
+	
+	}
+	
+	The effect of the 'perthis' clause is that one aspect instance will be created 
+	for each unique service object executing a business service (each unique 
+	object bound to 'this' at join points matched by the pointcut expression). 
+	The aspect instance is created the first time that a method is invoked on the service object. 
+	The aspect goes out of scope when the service object goes out of scope. 
+	Before the aspect instance is created, none of the advice within it executes. 
+	As soon as the aspect instance has been created, the advice declared within 
+	it will execute at matched join points, but only when the service object 
+	is the one this aspect is associated with. See the AspectJ programming guide for more information on per-clauses.
+
+	The 'pertarget' instantiation model works in exactly the same way as perthis, 
+	but creates one aspect instance for each unique target object at matched join points.

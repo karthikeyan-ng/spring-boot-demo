@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<bean id="testBean" class="com.techstack.spring.beanwrapper.builtinpropertyeditor.SampleBean">
+		<property name="file" value="classpath:/myFile.txt" />
+		<property name="url" value="classpath:/myFile.txt" />
+		<property name="charset" value="UTF-8" />
+		<property name="clazz" value="com.techstack.spring.beanwrapper.builtinpropertyeditor.ClassA" />
+		<property name="clazzArray">
+			<array>
+				<value>com.techstack.spring.beanwrapper.builtinpropertyeditor.ClassA</value>
+				<value>com.techstack.spring.beanwrapper.builtinpropertyeditor.ClassB</value>
+			</array>
+		</property>
+		<property name="currency" value="INR" />
+		<property name="inputStream" value="classpath:/myFile.txt" />
+		<property name="inputSource" value="classpath:/myInputSource.xml" />
+		<property name="locale" value="fr_FR" />
+		<property name="pattern" value="/foo/*" />
+		<property name="properties" value="lang=spring\ntopic=propertyEditor" />
+		<property name="resources" value="classpath*:my*" />
+		<property name="timeZone" value="Asia/Calcutta" />
+		<property name="uuid" value="97300000-4df0-22ce-e25c-20c73d2ef00e" />
+		<property name="bytes" value="This is bytes" />
+		<property name="charArray" value="This is char[]" />
+		<property name="character" value="X" />
+		<property name="bool" value="true" />
+		<property name="doubleValue" value="3.2d" />
+		<property name="stringArray" value="a, b, c, d, e" />
+	</bean>
+
+</beans>

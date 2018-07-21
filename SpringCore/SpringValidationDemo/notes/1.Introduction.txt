@@ -1,0 +1,58 @@
+							Validation, Data Binding, and Type Conversion
+							---------------------------------------------
+
+		Introduction
+		------------
+
+JSR-303/JSR-349 Bean Validation
+-------------------------------
+Spring Framework 4.0 supports Bean Validation 1.0 (JSR-303) and Bean Validation 1.1 (JSR-349) 
+in terms of setup support, also adapting it to Spring’s Validator interface.
+
+An application can choose to enable Bean Validation once globally, as described in Spring Validation, 
+and use it exclusively for all validation needs.
+
+An application can also register additional Spring Validator instances per DataBinder instance, 
+as described in Configuring a DataBinder. This may be useful for plugging in validation 
+logic without the use of annotations.
+
+
+Validation Pros / cons
+----------------------
+- There are pros and cons for considering validation as business logic, and Spring offers a design for validation (and data binding) 
+that does not exclude either one of them.
+
+- Specifically validation should not be tied to the web tier, should be easy to localize and it should be possible to plug in any validator available.
+
+- Considering the above, Spring has come up with a Validator interface that is both basic and eminently usable in every layer of an application.
+
+- Data binding is useful for allowing user input to be dynamically bound to the domain model of an application (or whatever objects you 
+use to process user input).
+
+- Spring provides the so-called DataBinder to do exactly that.
+
+- The Validator and the DataBinder make up the validation package, which is primarily used in but not limited to the MVC framework.
+
+- The BeanWrapper is a fundamental concept in the Spring Framework and is used in a lot of places.
+		- However, you probably will not have the need to use the BeanWrapper directly.
+		- Because this is reference documentation however, we felt that some explanation might be in order.
+
+- Spring’s DataBinder and the lower-level BeanWrapper both use PropertyEditors to parse and format property values.
+
+- The PropertyEditor concept is part of the JavaBeans specification, and is also explained in this chapter.
+
+- Spring 3 introduces a "core.convert" package that provides a general type conversion facility, as well as a higher-level "format" package for formatting UI field values.
+
+- These new packages may be used as simpler alternatives to PropertyEditors, and will also be discussed in this chapter.
+
+
+Summary:
+--------
+ - Validator interface
+ - DataBinder interface
+ - BeanWrapper
+ - PropertyEditor
+ - core.convert (package in spring)
+
+
+move on to next....

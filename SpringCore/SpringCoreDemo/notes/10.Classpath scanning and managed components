@@ -1,0 +1,12 @@
+Classpath scanning and managed components
+-----------------------------------------
+
+	- @Component - for normal spring bean (java bean - pojo)
+	
+	- @Service - for service classes
+	
+	- @Controller - for web controllor
+	
+	- @Repository - for persistence service (DAOs)
+	
+	

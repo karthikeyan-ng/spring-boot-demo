@@ -1,0 +1,82 @@
+						Resources
+						---------
+Built-in Resource implementations
+---------------------------------
+
+There are a number of Resource implementations that come supplied straight out of the box in Spring:
+
+		- UrlResource
+		- ClassPathResource
+		- FileSystemResource
+		- ServletContextResource
+		- InputStreamResource
+		- ByteArrayResource
+		
+UrlResource
+-----------
+The UrlResource wraps a java.net.URL, and may be used to access any object that is normally accessible via a URL, 
+such as files, an HTTP target, an FTP target, etc.
+
+All URLs have a standardized String representation, such that appropriate standardized prefixes are used to indicate 
+one URL type from another.
+
+This includes file: for accessing filesystem paths, http: for accessing resources via the HTTP protocol, ftp: 
+for accessing resources via FTP, etc.
+
+A UrlResource is created by Java code explicitly using the UrlResource constructor, but will often be created 
+implicitly when you call an API method which takes a String argument which is meant to represent a path.
+
+For the latter case, a JavaBeans PropertyEditor will ultimately decide which type of Resource to create. 
+If the path string contains a few well-known (to it, that is) prefixes such as classpath:, it will create 
+an appropriate specialized Resource for that prefix.
+
+However, if it doesn’t recognize the prefix, it will assume that this is just a standard URL string, 
+and will create a UrlResource.
+
+ClassPathResource
+-----------------
+This class represents a resource which should be obtained from the classpath. 
+
+This uses either the thread context class loader, a given class loader, or a given class for loading resources.
+
+This Resource implementation supports resolution as java.io.File if the class path resource resides in the file system, 
+but not for classpath resources which reside in a jar and have not been expanded (by the servlet engine, or whatever 
+the environment is) to the filesystem.
+
+To address this the various Resource implementations always support resolution as a java.net.URL.
+
+A ClassPathResource is created by Java code explicitly using the ClassPathResource constructor, but will often be 
+created implicitly when you call an API method which takes a String argument which is meant to represent a path.
+
+For the latter case, a JavaBeans PropertyEditor will recognize the special prefix classpath: on the string path, 
+and create a ClassPathResource in that case.
+
+FileSystemResource
+------------------
+This is a Resource implementation for java.io.File handles. It obviously supports resolution as a File, and as a URL.
+
+ServletContextResource
+----------------------
+This is a Resource implementation for ServletContext resources, interpreting relative paths within the relevant 
+web application’s root directory.
+
+This always supports stream access and URL access, but only allows java.io.File access when the web application 
+archive is expanded and the resource is physically on the filesystem.
+
+Whether or not it’s expanded and on the filesystem like this, or accessed directly from the JAR or somewhere else 
+like a DB (it’s conceivable) is actually dependent on the Servlet container.
+
+InputStreamResource
+-------------------
+A Resource implementation for a given InputStream. This should only be used if no specific Resource implementation 
+is applicable. In particular, prefer ByteArrayResource or any of the file-based Resource implementations where possible.
+
+In contrast to other Resource implementations, this is a descriptor for an already opened resource - therefore 
+returning true from isOpen(). Do not use it if you need to keep the resource descriptor somewhere, or if you need 
+to read a stream multiple times.
+
+ByteArrayResource
+-----------------
+This is a Resource implementation for a given byte array. It creates a ByteArrayInputStream for the given byte array.
+
+It’s useful for loading content from any given byte array, without having to resort to a single-use InputStreamResource.

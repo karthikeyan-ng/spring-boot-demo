@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<bean id="manageCollections" class="com.techstack.spring.di.collections.ManageCollections">
+		
+		<!-- results in a setAdminEmails(java.util.Properties) call -->
+	    <property name="adminEmails">
+	        <props>
+	            <prop key="administrator">administrator@example.org</prop>
+	            <prop key="support">support@example.org</prop>
+	            <prop key="development">development@example.org</prop>
+	        </props>
+	    </property>
+	    
+	    <!-- results in a setListCollection(java.util.List) call -->
+	    <property name="listCollection">
+	        <list>
+	            <value>One</value>
+	            <value>Tow</value>
+	            <value>Three</value>
+	            <value>One</value>
+	            <!-- <ref bean="myDataSource" /> -->
+	        </list>
+	    </property>
+	    
+	    <!-- results in a setSetCollection(java.util.Set) call -->
+	    <property name="setCollection">
+	        <list>
+	            <value>One</value>
+	            <value>Tow</value>
+	            <value>Three</value>
+	            <value>One</value>
+	            <!-- <ref bean="myDataSource" /> -->
+	        </list>
+	    </property>
+	    
+	    <!-- results in a setMapCollection(java.util.Map) call -->
+	    <property name="mapCollection">
+	        <map>
+	            <entry key="an entry" value="just some string"/>
+	            <entry key="apple" value="it's a fruit"/>
+	            <entry> <!-- Map with null key -->
+	            	<key><null/></key>
+	            	<value>some value</value>
+	            </entry>
+	            <entry> <!-- More than one null key would override the value -->
+	            	<key><null/></key>
+	            	<value>some value1</value>
+	            </entry>
+	            <!-- <entry key ="a ref" value-ref="myDataSource"/> -->
+	        </map>
+	    </property>
+	    
+	</bean>
+	
+	<bean id="myDataSource" class="com.techstack.spring.di.collections.MyDataSource"/>
+</beans>

@@ -1,0 +1,29 @@
+								Spring Expression Language (SpEL)
+								---------------------------------
+
+Language Reference
+------------------
+	
+	Literal expressions
+	-------------------
+	The types of literal expressions supported are
+		- strings
+		- numeric values (int, real, hex)
+		- boolean
+		- null
+	- Strings are delimited by single quotes.
+	
+	- To put a single quote itself in a string, use two single quote characters.
+	
+	- Numbers support the use of the negative sign, exponential notation, and decimal points. By default real 
+	numbers are parsed using Double.parseDouble().
+	
+	Ref: MainForLiteralExpression.java
+	
+	Properties, Arrays, Lists, Maps, Indexers
+	-----------------------------------------
+	- Navigating with property references is easy:
+		- just use a period(.) to indicate a nested property value.
+		- 
+		
+	Ref: MainForPropArraysListsMapsIndexerExp.java

@@ -1,0 +1,77 @@
+								Spring Expression Language (SpEL)
+								---------------------------------
+
+Introduction
+------------
+- The Spring Expression Language (SpEL for short) is a powerful expression language that supports querying and manipulating an object graph at runtime.
+- The language syntax is similar to Unified EL but offers additional features, most notably method invocation and basic string templating functionality.
+
+	several other Java expression languages available
+	-------------------------------------------------
+	- OGNL - Object Graph Notation Language
+	- MVEL - MVFLEX Expression Language (MVEL) is a hybrid dynamic/statically typed, embeddable Expression Language and runtime for the Java Platform.
+	- JBoss EL
+	
+Why Spring EL?
+--------------
+the Spring Expression Language was created to provide the Spring community with a single well supported expression language that can be used 
+across all the products in the Spring portfolio.
+
+Why Spring creates Spring EL?
+-----------------------------
+SpEL features are driven by the requirements of the projects in the Spring portfolio, including tooling requirements for code completion support 
+within the Eclipse based Spring Tool Suite.
+
+SpEL is based on a technology agnostic API allowing other expression language implementations to be integrated should the need arise.
+
+While SpEL serves as the foundation for expression evaluation within the Spring portfolio, it is not directly tied to Spring and can be used 
+independently.
+
+the features of the expression language
+---------------------------------------
+	- its API, and its language syntax
+	- an Inventor and Inventor’s Society classes are used as the target objects for expression evaluation.
+	
+The expression language supports the following functionality:
+-------------------------------------------------------------
+	*) Literal expressions
+
+	*) Boolean and relational operators
+
+	*) Regular expressions
+
+	*) Class expressions
+
+	*) Accessing properties, arrays, lists, maps
+
+	*) Method invocation
+
+	*) Relational operators
+
+	*) Assignment
+
+	*) Calling constructors
+
+	*) Bean references
+
+	*) Array construction
+
+	*) Inline lists
+
+	*) Inline maps
+
+	*) Ternary operator
+
+	*) Variables
+
+	*) User defined functions
+
+	*) Collection projection
+
+	*) Collection selection
+
+	*) Templated expressions
+	
+
+
+cont... happy learning... 

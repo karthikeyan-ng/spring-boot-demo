@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<bean id="customer"
+		class="com.techstack.spring.beanwrapper.builtinpropertyeditor.Customer">
+		<property name="customerName" value="Steve Thomas" />
+		<property name="phone" value="cell | 907-111-2123" />
+	</bean>
+
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="customEditors">
+			<map>
+				<entry key="com.techstack.spring.beanwrapper.builtinpropertyeditor.Phone"
+					value="com.techstack.spring.beanwrapper.builtinpropertyeditor.CustomPhoneEditor" />
+			</map>
+		</property>
+	</bean>
+
+</beans>

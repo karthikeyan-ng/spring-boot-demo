@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<!-- The init() method is called, after the message property is set -->
+	<bean id="accountService" class="com.techstack.spring.lifecycle.initialization.AccountService" init-method="init"/>
+	
+	<bean id="accountService2" class="com.techstack.spring.lifecycle.initialization.AccountService2"/>
+</beans>

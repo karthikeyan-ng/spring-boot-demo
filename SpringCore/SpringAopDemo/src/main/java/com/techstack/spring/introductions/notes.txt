@@ -1,0 +1,20 @@
+
+	 	Introductions (advance topic)
+		
+		Introductions (known as inter-type declarations in AspectJ) enable an aspect to declare 
+		that advised objects implement a given interface, and to provide an implementation of 
+		that interface on behalf of those objects.
+
+		An introduction is made using the @DeclareParents annotation. This annotation is used to 
+		declare that matching types have a new parent (hence the name). 
+		For example, given an interface UsageTracked, and an implementation of 
+		that interface DefaultUsageTracked, the following aspect declares 
+		that all implementors of service interfaces also implement the UsageTracked interface. 
+		(In order to expose statistics via JMX for example.)
+
+ 	    The interface to be implemented is determined by the type of the annotated field. 
+	    The value attribute of the @DeclareParents annotation is an AspectJ type pattern :- 
+	    any bean of a matching type will implement the UsageTracked interface. 
+	    Note that in the before advice of the above example, service beans can be 
+	    directly used as implementations of the UsageTracked interface.
+	 

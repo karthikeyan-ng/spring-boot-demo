@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+	<!-- default-lazy-init="true"> --> <!-- You can also control lazy-initialization at the container level by using 
+									the default-lazy-init attribute on the -->
+
+	<!-- <bean id="beanOne" class="com.techstack.spring.di.lazyinit.BeanOne">
+		<property name="beanTwo" ref="beanTwo" />
+		<property name="beanThree" ref="beanThree" />
+	</bean> -->
+	
+	<bean id="beanTwo" class="com.techstack.spring.di.lazyinit.BeanTwo" lazy-init="true" />
+	<bean id="beanThree" class="com.techstack.spring.di.lazyinit.BeanThree" />
+	
+</beans>

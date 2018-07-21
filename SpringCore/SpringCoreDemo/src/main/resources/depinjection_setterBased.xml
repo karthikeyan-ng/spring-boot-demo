@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- To verify all the @Required annotation setter references has been properly constructed or not -->
+    <!-- <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" /> -->
+    
+    <!-- Alternative to RequiredAnnotationBeanPostProcessor -->
+    <!-- <context:annotation-config/> -->
+
+	<!-- Alternative to context:annotation-config -->
+	<context:component-scan base-package="com.techstack.spring.di.setterbased" annotation-config="true"/>
+	
+	<bean id="employee" class="com.techstack.spring.di.setterbased.SimpleMovieLister">
+    	<!-- <property name="movieFinder" ref="movieFinder" /> -->
+    </bean>
+    <bean id="movieFinder" class="com.techstack.spring.di.setterbased.MovieFinder" />
+    
+
+	<!-- Simple Employee bean constructor args of different types -->
+    <!-- <bean id="employee" class="com.techstack.spring.di.constructorbased.Employee">
+    	<constructor-arg ref="homeAddress" />
+    	<constructor-arg ref="workAddress" />
+    </bean> -->
+    
+    <!-- Employee bean constructor args of same types -->
+    <!-- <bean id="employee" class="com.techstack.spring.di.constructorbased.Employee">
+    	<constructor-arg ref="homeAddress" />
+    	<constructor-arg ref="homeAddress" />
+    </bean> -->
+    
+    <!-- Employee bean constructor args of type which implements the same interface -->
+    <!-- <bean id="employee" class="com.techstack.spring.di.constructorbased.Employee">
+    	<constructor-arg ref="homeAddress" />
+    	<constructor-arg ref="workAddress" />
+    </bean> -->
+    
+    <!-- <bean id="homeAddress" class="com.techstack.spring.di.constructorbased.HomeAddress" />
+    <bean id="workAddress" class="com.techstack.spring.di.constructorbased.WorkAddress" /> -->
+
+<!-- ========================================================================================= -->    
+
+    <!-- Constructor argument type matching -->
+    <!-- <bean id="exampleBean" class="com.techstack.spring.di.constructorbased.ExampleBean">
+		<constructor-arg type="int" value="7500000" /> type="int"
+		<constructor-arg type="java.lang.String" value="42" /> type="java.lang.String"
+	</bean> -->
+	
+	<!-- Constructor argument index -->
+    <!-- <bean id="exampleBean" class="com.techstack.spring.di.constructorbased.ExampleBean">
+		<constructor-arg index="0" value="7500000" />
+		<constructor-arg index="1" value="42" />
+	</bean> -->
+	
+	<!-- Constructor argument name -->
+	<!-- TIP: Exception in thread "main" org.springframework.beans.factory.UnsatisfiedDependencyException: 
+		Error creating bean with name 'exampleBean' defined in class path resource [depinjection.xml]: 
+		Unsatisfied dependency expressed through constructor parameter 1: Ambiguous argument values for 
+		parameter of type [java.lang.String] - did you specify the correct bean references as arguments? -->
+	<!-- <bean id="exampleBean" class="com.techstack.spring.di.constructorbased.ExampleBean">
+		<constructor-arg name="years" value="7500000" />
+		<constructor-arg name="ultimateAnswer" value="42" />
+	</bean> -->
+	
+	<!-- @ConstructorProperties -->
+	<bean id="exampleBean" class="com.techstack.spring.di.constructorbased.ExampleBean">
+		<constructor-arg name="years" value="7500000" />
+		<constructor-arg name="ultimateAnswer" value="42" />
+	</bean>
+
+<!-- ========================================================================================= -->
+
+</beans>

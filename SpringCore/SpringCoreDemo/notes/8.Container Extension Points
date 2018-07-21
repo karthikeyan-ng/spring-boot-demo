@@ -1,0 +1,59 @@
+Container Extension Points
+--------------------------
+	Spring suggest developers does not need to subclass ApplicationContext implementation classes. Instead, 
+	the Spring IoC container can be extended by plugging in implementations of special integration interfaces.
+
+	Customizing beans using a BeanPostProcessor
+	-------------------------------------------
+	The BeanPostProcessor interface defines callback methods that you can implement to provide your 
+	own (or override the container’s default) instantiation logic, dependency-resolution logic, and so forth.
+	
+	If you want to implement some custom logic after the Spring container finishes instantiating, configuring, 
+	and initializing a bean, you can plug in one or more BeanPostProcessor implementations.
+	
+	You can configure multiple BeanPostProcessor instances, and you can control the order in which these 
+	BeanPostProcessors execute by setting the order property.
+	
+	You can set this order property only if the BeanPostProcessor implements the Ordered interface;
+	
+	if you write your own BeanPostProcessor you should consider implementing the Ordered interface too.
+	
+	BeanFactoryPostProcessor
+	-----------------------
+	BeanFactoryPostProcessor works on the bean definitions or configuration meta data of the bean before beans are actually created. 
+	
+	Spring provides multiple BeanFactoryPostProcessor beans, so it invoked to resolve run time dependencies such reading value from external property files.
+	
+	BeanFactoryPostProcessor can modify the definition of any bean.
+	
+	If you define a BeanFactoryPostProcessor in one container, it will only be applied to the bean definitions in that container.
+	
+		Customizing BeanFactoryPostProcessor
+		------------------------------------
+		Ref: https://www.dineshonjava.com/writing-beanfactorypostprocessor-in/
+		
+		A bean factory post-processor is a java class which implements the org.springframework.beans.factory.config.BeanFactoryPostProcessor interface.
+		
+		It is executed manually (in the case of the BeanFactory) or automatically (in the case of the ApplicationContext) to apply changes of some sort 
+		to an entire BeanFactory, after it has been constructed.
+		
+		Spring includes a number of pre-existing bean factory post-processors, such as given below
+		
+		PropertyResourceConfigurer and PropertyPlaceHolderConfigurer – implemented as a bean factory post-processor, is used to externalize some property values 
+		from a BeanFactory definition, into another separate file in Java Properties format.
+		
+		
+		Customizing instantiation logic with a FactoryBean
+		--------------------------------------------------
+		Implement the org.springframework.beans.factory.FactoryBean interface for objects that are themselves factories.
+		
+		The FactoryBean interface is a point of pluggability into the Spring IoC container’s instantiation logic. If you have complex initialization code that is 
+		better expressed in Java as opposed to a (potentially) verbose amount of XML, you can create your own FactoryBean, write the complex initialization inside 
+		that class, and then plug your custom FactoryBean into the container.
+		
+		The FactoryBean concept and interface is used in a number of places within the Spring Framework; more than 50 implementations of the FactoryBean interface 
+		ship with Spring itself.
+
+		When you need to ask a container for an actual FactoryBean instance itself instead of the bean it produces, preface the bean’s id with the 
+		ampersand symbol ( &) when calling the getBean() method of the ApplicationContext. So for a given FactoryBean with an id of myBean, 
+		invoking getBean("myBean") on the container returns the product of the FactoryBean; whereas, invoking getBean("&myBean") returns the FactoryBean instance itself.

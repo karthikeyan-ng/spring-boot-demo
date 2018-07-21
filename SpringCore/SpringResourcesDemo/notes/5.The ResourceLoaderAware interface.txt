@@ -1,0 +1,42 @@
+						Resources
+						---------
+The ResourceLoaderAware interface
+----------------------------------
+The ResourceLoaderAware interface is a special marker interface, identifying objects that expect to be provided with a ResourceLoader reference.
+
+	public interface ResourceLoaderAware {
+	    void setResourceLoader(ResourceLoader resourceLoader);
+	}
+	
+- When a class implements ResourceLoaderAware and is deployed into an application context (as a Spring-managed bean), it is recognized as 
+ResourceLoaderAware by the application context.
+
+- The application context will then invoke the setResourceLoader(ResourceLoader), supplying itself as the argument (remember, 
+all application contexts in Spring implement the ResourceLoader interface).
+
+- Of course, since an ApplicationContext is a ResourceLoader, the bean could also implement the ApplicationContextAware interface and use 
+the supplied application context directly to load resources, but in general, it’s better to use the specialized ResourceLoader interface 
+if that’s all that’s needed.
+
+- The code would just be coupled to the resource loading interface, which can be considered a utility interface, and not the whole 
+Spring ApplicationContext interface.
+
+- As of Spring 2.5, you can rely upon autowiring of the ResourceLoader as an alternative to implementing the ResourceLoaderAware interface.
+		
+		- you can use in constructor argument
+		
+			@Autowired
+			MyClass(ResourceLoader resource) {
+			}
+		
+		- or setter method
+			
+			@Autowired
+			setResourceLoader(ResourceLoader  resource) {
+				....
+			}
+		
+		- or field
+			
+			@Autowired
+			ResourceLoader resourceLoader;

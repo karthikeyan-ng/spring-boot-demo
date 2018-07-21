@@ -1,0 +1,17 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="restaurantBean" class="com.techstack.spring.beanpostprocessor.customized.usingordered.Restaurant" init-method="init" destroy-method="destroy">
+	</bean>
+	
+	<bean class="com.techstack.spring.beanpostprocessor.customized.usingordered.DemoBeanPostProcessor1">
+		<property name="order" value="1" />
+	</bean>
+	
+	<bean class="com.techstack.spring.beanpostprocessor.customized.usingordered.DemoBeanPostProcessor2">
+		<property name="order" value="0" />
+	</bean>
+
+</beans>

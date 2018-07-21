@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+        
+        
+	<!-- Configuring different transactional semantics for different beans -->
+
+	<aop:config>
+
+        <aop:pointcut id="serviceOperation"
+                expression="execution(* x.y.service..*Service.*(..))"/>
+
+        <aop:advisor pointcut-ref="serviceOperation" advice-ref="txAdvice"/>
+
+    </aop:config>
+
+    <!-- these two beans will be transactional... -->
+    <bean id="fooService" class="x.y.service.DefaultFooService"/>
+    <bean id="barService" class="x.y.service.extras.SimpleBarService"/>
+
+    <!-- ... and these two beans won't -->
+    <bean id="anotherService" class="org.xyz.SomeService"/> <!-- (not in the right package) -->
+    <bean id="barManager" class="x.y.service.SimpleBarManager"/> <!-- (doesn't end in 'Service') -->
+
+    <tx:advice id="txAdvice">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- other transaction infrastructure beans such as a PlatformTransactionManager omitted... -->
+
+</beans>

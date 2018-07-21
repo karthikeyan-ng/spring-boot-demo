@@ -1,0 +1,82 @@
+Container overview
+------------------
+
+- The interface org.springframework.context.ApplicationContext represents the Spring IoC container and is responsible for instantiating, configuring, and assembling the aforementioned beans.
+
+- The configuration metadata is represented in XML, Java annotations, or Java code. It allows you to express the objects that compose your application and the rich interdependencies between such objects.
+
+- Several implementations of the ApplicationContext interface are supplied out-of-the-box with Spring.
+		
+		- In standalone applications it is common to create an instance of ClassPathXmlApplicationContext or FileSystemXmlApplicationContext. 
+		
+- In most application scenarios, explicit user code is not required to instantiate one or more instances of a Spring IoC container. 
+
+- In a web application scenario, a simple eight (or so) lines of boilerplate web descriptor XML in the web.xml file of the application will typically suffice.
+
+- Refer Figure-1 The IoC Container.
+
+=======================================================
+
+Configuration metadata
+----------------------
+
+- As the preceding diagram shows, the Spring IoC container consumes a form of configuration metadata; 
+this configuration metadata represents how you as an application developer tell the Spring container to instantiate, 
+configure, and assemble the objects in your application.
+
+- Configuration metadata is traditionally supplied in a simple and intuitive XML format, which is what most of 
+this chapter uses to convey key concepts and features of the Spring IoC container.
+
+- XML-based metadata is not the only allowed form of configuration metadata. 
+The Spring IoC container itself is totally decoupled from the format in which this configuration metadata 
+is actually written. These days many developers choose Java-based configuration for their Spring applications.
+
+- For information about using other forms of metadata with the Spring container, see:
+
+	- Annotation-based configuration: Spring 2.5 introduced support for annotation-based configuration metadata.
+
+	- Java-based configuration: Starting with Spring 3.0, many features provided by the Spring JavaConfig project 
+	became part of the core Spring Framework. Thus you can define beans external to your application classes by using 
+	Java rather than XML files. To use these new features, see the @Configuration, @Bean, @Import and @DependsOn annotations.
+	
+- These bean definitions correspond to the actual objects that make up your application. Typically you define service 
+layer objects, data access objects (DAOs), presentation objects such as Struts Action instances, infrastructure objects 
+such as Hibernate SessionFactories, JMS Queues, and so forth. Typically one does not configure fine-grained domain objects 
+in the container, because it is usually the responsibility of DAOs and business logic to create and load domain objects.
+
+=======================================================
+
+Instantiating a container
+-------------------------
+
+- Instantiating a Spring IoC container is straightforward. The location path or paths supplied to an 
+ApplicationContext constructor are actually resource strings that allow the container to 
+load configuration metadata from a variety of external resources such as the local file system, 
+from the Java CLASSPATH, and so on.
+
+	ApplicationContext context = new ClassPathXmlApplicationContext("services.xml", "daos.xml");
+
+=======================================================
+	
+Using the container
+-------------------
+
+- The ApplicationContext is the interface for an advanced factory capable of maintaining a registry of different beans and their dependencies. Using the method T getBean(String name, Class<T> requiredType) you can retrieve instances of your beans.
+
+	==> ApplicationContext context = new ClassPathXmlApplicationContext("services.xml", "daos.xml");
+	
+- With Groovy configuration, bootstrapping looks very similar, just a different context implementation class which is Groovy-aware (but also understands XML bean definitions):
+
+	==> ApplicationContext context = new GenericGroovyApplicationContext("services.groovy", "daos.groovy");
+	
+- The most flexible variant is GenericApplicationContext in combination with reader delegates, e.g. with XmlBeanDefinitionReader for XML files:
+
+	GenericApplicationContext context = new GenericApplicationContext();
+	new XmlBeanDefinitionReader(context).loadBeanDefinitions("services.xml", "daos.xml");
+	context.refresh();
+	
+Or with GroovyBeanDefinitionReader for Groovy files:
+
+	GenericApplicationContext context = new GenericApplicationContext();
+	new GroovyBeanDefinitionReader(context).loadBeanDefinitions("services.groovy", "daos.groovy");
+	context.refresh();

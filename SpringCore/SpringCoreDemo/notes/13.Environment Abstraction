@@ -1,0 +1,163 @@
+Environment Abstraction
+-----------------------
+The Environment is an abstraction integrated in the container that models two key aspects of the application environment: profiles and properties.
+
+Profile
+-------
+A profile is a named, logical group of bean definitions to be registered with the container only if the given profile is active.
+Beans may be assigned to a profile whether defined in XML or via annotations.
+The role of the Environment object with relation to profiles is in determining which profiles (if any) are currently active, and which profiles (if any) should be active by default.
+
+Properties
+----------
+Properties play an important role in almost all applications, and may originate from a variety of sources:
+	properties files, 
+	JVM system properties, 
+	system environment variables, 
+	JNDI, 
+	servlet context parameters, 
+	ad-hoc Properties objects, 
+	Maps, and so on.
+The role of the Environment object with relation to properties is to provide the user with a convenient service interface for configuring property sources and resolving properties from them.
+
+Bean Definition Profiles
+------------------------
+Bean definition profiles is a mechanism in the core container that allows for registration of different beans in different environments.
+The word environment can mean different things to different users and this feature can help with many use cases, including:
+	- working against an in-memory datasource in development vs looking up that same datasource from JNDI when in QA or production
+	- registering monitoring infrastructure only when deploying an application into a performance environment
+	- registering customized implementations of beans for customer A vs. customer B deployments
+	
+Problem Scenario
+----------------
+	We have a local DataSource implementation using HSQL database and on the higher environment like QA/PROD DataSource will be pick up from JNDI context.
+	The problem is how to switch between using these two variations based on the current environment. 
+	
+	Over time, Spring users have devised a number of ways to get this done, usually relying on a combination of system environment variables and 
+	XML <import/> statements containing ${placeholder} tokens that resolve to the correct configuration file path depending on the value of an environment variable.
+  	
+  	Bean definition profiles is a core container feature that provides a solution to this problem.
+  	
+  	If we generalize the example use case above of environment-specific bean definitions, we end up with the need to register certain bean definitions 
+  	in certain contexts, while not in others. You could say that you want to register a certain profile of bean definitions in situation A, and a different profile in situation B.
+  	
+Local:
+	@Bean
+	public DataSource dataSource() {
+	    return new EmbeddedDatabaseBuilder()
+	        .setType(EmbeddedDatabaseType.HSQL)
+	        .addScript("my-schema.sql")
+	        .addScript("my-test-data.sql")
+	        .build();
+	}  	
+	
+QA/PROD:
+	@Bean(destroyMethod="")
+	public DataSource dataSource() throws Exception {
+	    Context ctx = new InitialContext();
+	    return (DataSource) ctx.lookup("java:comp/env/jdbc/datasource");
+	}
+	
+using @Profile annotation.
+
+@Profile can be used as a meta-annotation for the purpose of creating a custom composed annotation. 
+The following example defines a custom @Production annotation that can be used as a drop-in replacement for @Profile("production")
+
+TIP
+---
+If a @Configuration class is marked with @Profile, all of the @Bean methods and @Import annotations associated with that class will be 
+bypassed unless one or more of the specified profiles are active. If a @Component or @Configuration class is marked with @Profile({"p1", "p2"}), 
+that class will not be registered/processed unless profiles 'p1' and/or 'p2' have been activated. If a given profile is prefixed with the NOT operator (!), 
+the annotated element will be registered if the profile is not active. For example, given @Profile({"p1", "!p2"}), registration will occur if profile 
+'p1' is active or if profile 'p2' is not active.
+
+
+@Profile - applies to @Bean creation method level.
+
+XML bean definition profiles
+----------------------------
+<beans profile="development" ....>
+</beans>
+
+<beans ...>
+	
+	<beans profile="development">
+        <jdbc:embedded-database id="dataSource">
+            <jdbc:script location="classpath:com/bank/config/sql/schema.sql"/>
+            <jdbc:script location="classpath:com/bank/config/sql/test-data.sql"/>
+        </jdbc:embedded-database>
+    </beans>
+
+    <beans profile="production">
+        <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/datasource"/>
+    </beans>
+</beans>
+
+Activating a profile
+--------------------
+AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+ctx.getEnvironment().setActiveProfiles("development");
+ctx.register(SomeConfig.class, StandaloneDataConfig.class, JndiDataConfig.class);
+ctx.refresh();
+
+In addition, profiles may also be activated declaratively through 
+	- the spring.profiles.active property which may be specified through system environment variables, 
+	- JVM system properties, 
+	- servlet context parameters in web.xml, or 
+	- even as an entry in JNDI (see PropertySource abstraction). 
+
+Default profile
+---------------
+The default profile represents the profile that is enabled by default. Consider the following:
+
+Refer "DefaultDataConfig.java"
+
+If no profile is active, the dataSource above will be created; this can be seen as a way to provide a default definition for one or more beans. 
+If any profile is enabled, the default profile will not apply.
+
+The name of the default profile can be changed using setDefaultProfiles() on the Environment or declaratively using the spring.profiles.default property.
+
+==================================================================================================
+
+PropertySource abstraction
+--------------------------
+Spring’s Environment abstraction provides search operations over a configurable hierarchy of property sources.
+
+	ApplicationContext ctx = new GenericApplicationContext();
+	Environment env = ctx.getEnvironment();
+	boolean containsFoo = env.containsProperty("foo");
+	System.out.println("Does my environment contain the 'foo' property? " + containsFoo);
+	
+In the snippet above, we see a high-level way of asking Spring whether the foo property is defined for the current environment. 
+To answer this question, the Environment object performs a search over a set of PropertySource objects. A PropertySource is a simple abstraction over 
+any source of key-value pairs, and Spring’s StandardEnvironment is configured with two PropertySource objects — one representing the 
+set of JVM system properties (a la System.getProperties()) and one representing the set of system environment variables (a la System.getenv()).
+
+For a common StandardServletEnvironment, the full hierarchy looks as follows, with the highest-precedence entries at the top:
+	ServletConfig parameters (if applicable, e.g. in case of a DispatcherServlet context)
+	ServletContext parameters (web.xml context-param entries)
+	JNDI environment variables ("java:comp/env/" entries)
+	JVM system properties ("-D" command-line arguments)
+	JVM system environment (operating system environment variables)
+	
+
+	Custom configurable property
+	----------------------------
+	Most importantly, the entire mechanism is configurable. Perhaps you have a custom source of properties that you’d like to integrate into this search. 
+	No problem — simply implement and instantiate your own PropertySource and add it to the set of PropertySources for the current Environment:
+	
+	ConfigurableApplicationContext ctx = new GenericApplicationContext();
+	MutablePropertySources sources = ctx.getEnvironment().getPropertySources();
+	sources.addFirst(new MyPropertySource());
+	
+	In the code above, MyPropertySource has been added with highest precedence in the search. If it contains a foo property, it will be detected and 
+	returned ahead of any foo property in any other PropertySource.
+	
+	@PropertySource
+	---------------
+	The @PropertySource annotation provides a convenient and declarative mechanism for adding a PropertySource to Spring’s Environment.
+	
+	Given a file "app.properties" containing the key/value pair testbean.name=myTestBean, the following @Configuration class uses 
+	@PropertySource in such a way that a call to testBean.getName() will return "myTestBean".
+	
+	

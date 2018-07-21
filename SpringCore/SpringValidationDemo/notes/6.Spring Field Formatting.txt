@@ -1,0 +1,42 @@
+							Validation, Data Binding, and Type Conversion
+							---------------------------------------------
+
+		Spring Field Formatting
+		-----------------------
+		
+Formatter SPI
+-------------
+The Formatter SPI to implement field formatting logic is simple and strongly typed:
+
+	package org.springframework.format;
+	public interface Formatter<T> extends Printer<T>, Parser<T> {
+	}
+	
+	Where Formatter extends from the Printer and Parser building-block interfaces:
+	
+	public interface Printer<T> {
+	    String print(T fieldValue, Locale locale);
+	}
+
+	public interface Parser<T> {
+	    T parse(String clientValue, Locale locale) throws ParseException;
+	}
+	
+	How to create your custom formatter? simply implement the Formatter interface above. Parameterize T to be the type of 
+	object you wish to format, for example, java.util.Date.
+		
+		- Implement the print() operation to print an instance of T for display in the client locale.
+		- Implement the parse() operation to parse an instance of T from the formatted representation returned from the client locale.
+		
+	Note: Your Formatter should throw a ParseException or IllegalArgumentException if a parse attempt fails. Take care to ensure 
+	your Formatter implementation is thread-safe.
+	
+=====================================================================================
+Annotation-driven Formatting
+----------------------------
+Spring provides a mechanism for declaratively configuring fields with formatting rules using annotations.
+
+Spring provides predefined annotations in package: org.springframework.format.annotation.
+
+
+	

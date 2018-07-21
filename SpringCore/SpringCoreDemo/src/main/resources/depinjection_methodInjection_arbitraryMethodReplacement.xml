@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<bean id="myValueCalculator" 
+		class="com.techstack.spring.di.methodinjection.arbitarymethodreplacement.MyValueCalculator">
+		<!-- arbitrary method replacement -->
+		<replaced-method name="computeValue" replacer="replacementComputeValue">
+			<!-- 
+				java.lang.String
+				String
+				Str 
+			-->
+			<arg-type>String</arg-type>
+		</replaced-method>
+	</bean>
+
+	<bean id="replacementComputeValue" 
+		class="com.techstack.spring.di.methodinjection.arbitarymethodreplacement.ReplacementComputeValue" />
+
+</beans>

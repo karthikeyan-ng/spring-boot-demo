@@ -1,0 +1,137 @@
+							Validation, Data Binding, and Type Conversion
+							---------------------------------------------
+
+		Bean manipulation and the BeanWrapper
+		-------------------------------------
+- The org.springframework.beans package adheres to the JavaBeans standard provided by Oracle.
+
+- One quite important class in the beans package is the BeanWrapper interface and its corresponding implementation (BeanWrapperImpl).
+
+- Functionality of BeanWrapper interface is
+	- to set and get property values (individually or in bulk)
+	- get property descriptors
+	- to query properties to determine if they are readable or writable
+	- the BeanWrapper offers support for nested properties, enabling the setting of properties on sub-properties to an unlimited depth. 
+	- it supports the ability to add standard JavaBeans PropertyChangeListeners and VetoableChangeListeners without the need for supporting 
+	code in the target class
+	- it provides support for the setting of indexed properties.
+	
+Usage: How to use BeanWrapper?
+	- The BeanWrapper usually isn’t used by application code directly, but by the DataBinder and the BeanFactory.
+	- The way the BeanWrapper works is partly indicated by its name: it wraps a bean to perform actions on that bean, like setting and retrieving properties.
+	
+
+Setting and getting basic and nested properties
+-----------------------------------------------
+	- Setting and getting properties is done using the setPropertyValue(s) and getPropertyValue(s) methods that both come with a couple of overloaded variants.
+	
+	- important to know is that there are a couple of conventions for indicating properties of an object.
+	
+	Examples of properties
+	----------------------
+	(*) name - Indicates the property name corresponding to the methods getName() or isName() and setName(..)
+	
+	(*) account.name - Indicates the nested property name of the property account corresponding 
+			e.g. to the methods getAccount().setName() or getAccount().getName()
+			
+	(*) account[2] - Indicates the third element of the indexed property account. Indexed properties can be of 
+			type array, list or other naturally ordered collection
+			
+	(*) account[COMPANYNAME] - Indicates the value of the map entry indexed by the key COMPANYNAME of the Map property account
+
+Built-in PropertyEditor implementations
+---------------------------------------
+	- Spring uses the concept of PropertyEditors to effect the conversion between an Object and a String.
+	
+	- If you think about it, it sometimes might be handy to be able to represent properties in a different way than the 
+	object itself.
+	
+	- Example:
+		a Date can be represented in a human readable way (as the String '2007-14-09'), while we’re still able to 
+		convert the human readable form back to the original date (or even better: convert any date entered in a human 
+		readable form, back to Date objects).
+		
+		This behavior can be achieved by registering custom editors, of type java.beans.PropertyEditor.
+		
+	- Spring has a number of built-in PropertyEditors to make life easy. 
+		- Each of those is listed below and they are all located in the org.springframework.beans.propertyeditors package.
+		
+		(*) ByteArrayPropertyEditor - Editor for byte arrays. Strings will simply be converted to their corresponding byte 
+		representations. Registered by default by BeanWrapperImpl.
+		
+		(*) ClassEditor - Parses Strings representing classes to actual classes and the other way around. When a class 
+		is not found, an IllegalArgumentException is thrown. Registered by default by BeanWrapperImpl.
+		
+		(*) CustomCollectionEditor - Property editor for Collections, converting any source Collection to a given target Collection type.
+		
+		(*) CustomDateEditor - Customizable property editor for java.util.Date, supporting a custom DateFormat. NOT 
+		registered by default. Must be user registered as needed with appropriate format.
+		
+		(*) CustomNumberEditor - Customizable property editor for any Number subclass like Integer, Long, Float, Double. 
+		Registered by default by BeanWrapperImpl, but can be overridden by registering custom instance of it as a 
+		custom editor.
+		
+		(*) FileEditor - Capable of resolving Strings to java.io.File objects. Registered by default by BeanWrapperImpl.
+		
+		(*) InputStreamEditor - One-way property editor, capable of taking a text string and producing (via an intermediate 
+		ResourceEditor and Resource) an InputStream, so InputStream properties may be directly set as Strings. Note that 
+		the default usage will not close the InputStream for you! Registered by default by BeanWrapperImpl.
+		
+		(*) LocaleEditor - Capable of resolving Strings to Locale objects and vice versa (the String format is 
+		[country][variant], which is the same thing the toString() method of Locale provides). Registered by default 
+		by BeanWrapperImpl.
+		
+		(*) PatternEditor - Capable of resolving Strings to java.util.regex.Pattern objects and vice versa.
+		
+		(*) PropertiesEditor - Capable of converting Strings (formatted using the format as defined in the javadocs of 
+		the java.util.Properties class) to Properties objects. Registered by default by BeanWrapperImpl.
+		
+		(*) StringTrimmerEditor - Property editor that trims Strings. Optionally allows transforming an empty string into a 
+		null value. NOT registered by default; must be user registered as needed.
+		
+		(*) URLEditor - Capable of resolving a String representation of a URL to an actual URL object. Registered by 
+		default by BeanWrapperImpl.
+		
+	- Spring uses the java.beans.PropertyEditorManager to set the search path for property editors that might be needed.
+	
+	- The standard JavaBeans infrastructure will automatically discover PropertyEditor classes (without you having to 
+	register them explicitly) if they are in the same package as the class they handle, and have the same name as that 
+	class, with 'Editor' appended
+	
+		- Example:
+				one could have the following class and package structure, which would be sufficient for the 
+				FooEditor class to be recognized and used as the PropertyEditor for Foo-typed properties.
+				
+				com
+				 |_chank
+				     |_pop
+				      	|_Foo.java
+				      	|_FooEditor.java // the PropertyEditor for the Foo class
+				      	
+				Alternatively, you can also use the standard BeanInfo JavaBeans mechanism here as well (described in 
+				not-amazing-detail here). Find below an example of using the BeanInfo mechanism for explicitly registering 
+				one or more PropertyEditor instances with the properties of an associated class.
+				
+				com
+				 |_chank
+				     |_pop
+				      	|_Foo.java
+				      	|_FooBean.java // the BeanInfo for the Foo class
+				      	
+Registering additional custom PropertyEditors
+---------------------------------------------
+
+	Refer "Customer" Editors
+	
+
+PropertyEditorRegistrar in Spring MVC
+--------------------------------------
+for those of you using Spring’s MVC web framework, using PropertyEditorRegistrars in conjunction with data-binding 
+Controllers (such as SimpleFormController) can be very convenient. Find below an example of using a PropertyEditorRegistrar 
+in the implementation of an initBinder(..) method:
+
+Refer: RegisterUserController.java
+
+
+
+
