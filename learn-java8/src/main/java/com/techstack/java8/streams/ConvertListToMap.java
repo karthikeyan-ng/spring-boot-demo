@@ -13,6 +13,8 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.techstack.beans.Brand;
+import com.techstack.beans.Model;
 import com.techstack.beans.Person;
 
 /**
@@ -76,6 +78,7 @@ public class ConvertListToMap {
 		usingComputeIfAbsent();
 		usingComputeIfPresent();
 		usingGetOrDefault();
+		usingChildClassProperyAsMapKey();
 	}
 
 	private static void usingForeachAndReplaceAll() {
@@ -176,6 +179,16 @@ public class ConvertListToMap {
 		List<Person> personList2019 = personMap.getOrDefault(2019, new ArrayList<>());
 		System.out.println("Size of person List 2019 = " + personList2019.size());
 	}
+	
+	/**
+	 * Collect Key as object from {@link Brand#getModel()} and
+	 * Value as self {@link Brand} object.
+	 */
+	private static void usingChildClassProperyAsMapKey() {
+		Map<Model, Brand> modelBrandMap = new HashMap<>();
+		modelBrandMap = createBrands().stream().collect(Collectors.toMap(Brand::getModel, Function.identity()));
+		System.out.println(modelBrandMap);
+	}
 
 	private static List<Person> createPersons() {
 		List<Person> persons = new ArrayList<>();
@@ -184,6 +197,15 @@ public class ConvertListToMap {
 		persons.add(new Person(3, "Sarvanan", "Male", 29));
 		persons.add(new Person(4, "Aravind", "Male", 27));
 		return persons;
+	}
+	
+	private static List<Brand> createBrands() {
+		List<Brand> brands = new ArrayList<>();
+		brands.add(new Brand("Ford", new Model("EcoSport")));
+		brands.add(new Brand("Ford", new Model("Aspire")));
+		brands.add(new Brand("Audi", new Model("A7")));
+		brands.add(new Brand("Ford", new Model("Mustang")));
+		return brands;
 	}
 
 }
