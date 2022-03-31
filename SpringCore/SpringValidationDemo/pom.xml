@@ -15,7 +15,7 @@ https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/
   	<dependency>
   		<groupId>org.springframework</groupId>
   		<artifactId>spring-beans</artifactId>
-  		<version>4.3.13.RELEASE</version>
+  		<version>5.3.18</version>
   	</dependency>
   	<dependency>
   		<groupId>org.springframework</groupId>
